@@ -38,7 +38,7 @@ class Person:
 
 class Bill:
     def __init__(self, bill_total, persons):
-        self.bill_total=float(bill_total)
+        self.bill_total=float(bill_total) + float(0.01) #round-off correction
         self.persons = persons
 
     def get_shared_total(self):
@@ -98,8 +98,9 @@ Last day for payment: 22nd of this month.
 Ps:
 
 #Bill-Trivia :)
-
-This
+This bill was generated using python!
+If you have any suggestions, fork out and share your git-pull requests here
+https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py
         """
         print report_text
 
