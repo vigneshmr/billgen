@@ -8,8 +8,6 @@ Vignesh Murugesan
 """
 
 import datetime
-import random
-import itertools
 
 now = datetime.datetime.now()
 
@@ -91,9 +89,10 @@ Your-total:
         for person in self.persons:
             person_owed_list.append(person.get_total_owed(main_bill_share=self.get_shared_per_head()))
 
-        # correct round-off
+        # adjust for round-off
+        person_owed_list = [round(owed_value, 2) for owed_value in person_owed_list]
         error = self.bill_total - sum(person_owed_list)
-        person_owed_list[random.randint(0,len(person_owed_list)-1)] += error
+person_owed_list[ now.month % len(person_owed_list) ] += error
 
         # report them
         for i, person in enumerate(self.persons):
@@ -115,8 +114,6 @@ If you have any suggestions, fork out and share your git-pull requests here
 https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py
         """
         print report_text
-        print 'Adjusted total: %f' % sum(person_owed_list)
-
 
 class Report:
     def __int__(self):
@@ -137,6 +134,7 @@ class Report:
         person_count = Report.read_value('How many users?')
         persons = []
         for _ in range(int(person_count)):
+            print ''
             person = Person(
                 Report.read_value('Name'),
                 Report.read_value('Monthly usage'),
