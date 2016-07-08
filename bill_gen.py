@@ -92,7 +92,7 @@ Your-total:
         # adjust for round-off
         person_owed_list = [round(owed_value, 2) for owed_value in person_owed_list]
         error = self.bill_total - sum(person_owed_list)
-person_owed_list[ now.month % len(person_owed_list) ] += error
+        person_owed_list[ now.month % len(person_owed_list) ] += error
 
         # report them
         for i, person in enumerate(self.persons):
