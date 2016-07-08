@@ -8,8 +8,6 @@ Vignesh Murugesan
 """
 
 import datetime
-import random
-import itertools
 
 now = datetime.datetime.now()
 
@@ -91,9 +89,10 @@ Your-total:
         for person in self.persons:
             person_owed_list.append(person.get_total_owed(main_bill_share=self.get_shared_per_head()))
 
-        # correct round-off
+        # adjust for round-off
+        person_owed_list = [round(owed_value, 2) for owed_value in person_owed_list]
         error = self.bill_total - sum(person_owed_list)
-        person_owed_list[random.randint(0,len(person_owed_list)-1)] += error
+        person_owed_list[ now.month % len(person_owed_list) ] += error
 
         # report them
         for i, person in enumerate(self.persons):
