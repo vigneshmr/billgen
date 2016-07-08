@@ -8,6 +8,8 @@ Vignesh Murugesan
 """
 
 import datetime
+import random
+import itertools
 
 now = datetime.datetime.now()
 
@@ -38,7 +40,7 @@ class Person:
 
 class Bill:
     def __init__(self, bill_total, persons):
-        self.bill_total=float(bill_total) + float(0.01) #round-off correction
+        self.bill_total=float(bill_total)
         self.persons = persons
 
     def get_shared_total(self):
@@ -84,13 +86,23 @@ Per-head-split:
 Your-total:
 """
 
+        # calculate expense
+        person_owed_list = []
         for person in self.persons:
+            person_owed_list.append(person.get_total_owed(main_bill_share=self.get_shared_per_head()))
+
+        # correct round-off
+        error = self.bill_total - sum(person_owed_list)
+        person_owed_list[random.randint(0,len(person_owed_list)-1)] += error
+
+        # report them
+        for i, person in enumerate(self.persons):
             report_text+="""
-%s %.2f + %.2f + %.2f  = %.2f"""% (person.name,
-                  self.get_shared_per_head(),
-                  person.monthly_usage,
-                  person.over_usage,
-                  person.get_total_owed(self.get_shared_per_head()))
+%s %.2f + %.2f + %.2f  = %.2f""" % (person.name,
+                                    self.get_shared_per_head(),
+                                    person.monthly_usage,
+                                    person.over_usage,
+                                    person_owed_list[i])
 
         report_text += """
 Last day for payment: 22nd of this month.
@@ -103,6 +115,7 @@ If you have any suggestions, fork out and share your git-pull requests here
 https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py
         """
         print report_text
+        print 'Adjusted total: %f' % sum(person_owed_list)
 
 
 class Report:
