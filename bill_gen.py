@@ -8,6 +8,8 @@ Vignesh Murugesan
 """
 from prettytable import PrettyTable
 import datetime
+import HTMLParser
+import requests
 
 now = datetime.datetime.now()
 
@@ -22,6 +24,11 @@ Regular usage:
 VG: 17
 PK: 12.75
 """
+
+# Default bill message
+DEFAULT_MESSAGE = """This bill was generated using python!
+If you have any suggestions, fork out and share your git-pull requests here
+https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py"""
 
 
 class Person:
@@ -108,19 +115,16 @@ Your-totals:
                        "{0:.2f}".format(person.over_usage),
                        "{0:.2f}".format(person_owed_list[i])],
                       )
-        report_text += '\n'+str(t)+'\n'
+        report_text += '\n' + str(t) + '\n'
 
         report_text += """
 Last day for payment: """ + LAST_PAYMENT_DATE + """ of this month.
 
 Ps:
 
-#Bill-Trivia :)
-This bill was generated using python!
-If you have any suggestions, fork out and share your git-pull requests here
-https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py
+#Random-Chuck-Norris-Joke :)
+""" + RandomMsg.get_message()
 
-"""
         print report_text
 
 
@@ -146,7 +150,7 @@ class Report:
         persons = []
         for iPerson in range(int(person_count)):
             Report.print_line()
-            print 'User: '+ str(iPerson)
+            print 'User: ' + str(iPerson)
             Report.print_line()
             person = Person(
                 Report.read_value('Name (Default: Stranger_*)') or ('Stranger_' + str(iPerson)),
@@ -170,6 +174,22 @@ class Report:
             Report._read_person_info(),
         )
         bill.generate_report()
+
+
+class RandomMsg:
+    def __int__(self):
+        pass
+
+    @staticmethod
+    def get_message():
+        r = requests.get('http://api.icndb.com/jokes/random')
+        if not r:
+            # api call failed. return default
+            return DEFAULT_MESSAGE
+        # call succeeded. Return joke
+        msg = r.json()
+        html_parser = HTMLParser.HTMLParser()
+        return html_parser.unescape(msg['value']['joke'])
 
 
 # Entry point

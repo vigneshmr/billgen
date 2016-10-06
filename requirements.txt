@@ -1,1 +1,3 @@
 prettytable==0.7.2
+HTMLParser==0.0.2
+requests==2.11.1
