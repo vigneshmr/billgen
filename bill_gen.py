@@ -6,10 +6,14 @@ June 8 2016
 Vignesh Murugesan
 
 """
-
+from prettytable import PrettyTable
 import datetime
 
 now = datetime.datetime.now()
+
+# Constants
+LAST_PAYMENT_DATE = '22nd'
+DEFAULT_USERS_COUNT = '5'
 
 # Tips
 BoilerPlate = """
@@ -19,11 +23,12 @@ VG: 17
 PK: 12.75
 """
 
+
 class Person:
     def __init__(self, name, monthly_usage, over_usage):
         self.name = name
-        self.monthly_usage= float(monthly_usage)
-        self.over_usage= float(over_usage)
+        self.monthly_usage = float(monthly_usage)
+        self.over_usage = float(over_usage)
 
     def get_usage_total(self):
         """
@@ -38,7 +43,7 @@ class Person:
 
 class Bill:
     def __init__(self, bill_total, persons):
-        self.bill_total=float(bill_total)
+        self.bill_total = float(bill_total)
         self.persons = persons
 
     def get_shared_total(self):
@@ -50,7 +55,7 @@ class Bill:
         return shared_total
 
     def get_shared_per_head(self):
-        return self.get_shared_total()/len(self.persons)
+        return self.get_shared_total() / len(self.persons)
 
     def generate_report(self):
         report = self.persons
@@ -71,19 +76,20 @@ Per-head-split:
             if person.get_usage_total() > 0:
                 report_text += """
 -(%.2f+%.2f)
-                """%(person.monthly_usage, person.over_usage)
+                """ % (person.monthly_usage, person.over_usage)
 
         report_text += """
-=%.2f / %d = $%.2f"""%(self.get_shared_total(),
-             len(self.persons),
-             self.get_shared_per_head())
+=%.2f / %d = $%.2f""" % (self.get_shared_total(),
+                         len(self.persons),
+                         self.get_shared_per_head())
 
         report_text += """
 
 
-Your-total:
+Your-totals:
 """
 
+        t = PrettyTable(['Name', 'BaseChargeSplit', 'MonthlyUsage', 'Overage', 'Total'])
         # calculate expense
         person_owed_list = []
         for person in self.persons:
@@ -92,19 +98,20 @@ Your-total:
         # adjust for round-off
         person_owed_list = [round(owed_value, 2) for owed_value in person_owed_list]
         error = self.bill_total - sum(person_owed_list)
-        person_owed_list[ now.month % len(person_owed_list) ] += error
+        person_owed_list[now.month % len(person_owed_list)] += error
 
         # report them
         for i, person in enumerate(self.persons):
-            report_text+="""
-%s %.2f + %.2f + %.2f  = %.2f""" % (person.name,
-                                    self.get_shared_per_head(),
-                                    person.monthly_usage,
-                                    person.over_usage,
-                                    person_owed_list[i])
+            t.add_row([person.name,
+                       "{0:.2f}".format(self.get_shared_per_head()),
+                       "{0:.2f}".format(person.monthly_usage),
+                       "{0:.2f}".format(person.over_usage),
+                       "{0:.2f}".format(person_owed_list[i])],
+                      )
+        report_text += '\n'+str(t)+'\n'
 
         report_text += """
-Last day for payment: 22nd of this month.
+Last day for payment: """ + LAST_PAYMENT_DATE + """ of this month.
 
 Ps:
 
@@ -112,8 +119,10 @@ Ps:
 This bill was generated using python!
 If you have any suggestions, fork out and share your git-pull requests here
 https://github.com/vigneshmurugesan90/scripts/blob/master/bill_gen.py
-        """
+
+"""
         print report_text
+
 
 class Report:
     def __int__(self):
@@ -121,24 +130,28 @@ class Report:
 
     @staticmethod
     def print_line():
-        print ['-' * 80]
+        print str('-' * 80)
 
     @staticmethod
     def read_value(key):
-        print '%s: '%key
+        print '%s: ' % key
         return raw_input()
 
     @staticmethod
     def _read_person_info():
-        print '  User Info:'
-        person_count = Report.read_value('How many users?')
+        print '\nUser Info:'
+        person_count = Report.read_value('How many users? (Default: ' + DEFAULT_USERS_COUNT + ')') or str(
+            DEFAULT_USERS_COUNT)
+        print '\nGenerating repot for ' + person_count + ' user(s)...'
         persons = []
-        for _ in range(int(person_count)):
-            print ''
+        for iPerson in range(int(person_count)):
+            Report.print_line()
+            print 'User: '+ str(iPerson)
+            Report.print_line()
             person = Person(
-                Report.read_value('Name'),
-                Report.read_value('Monthly usage'),
-                Report.read_value('Over usage'),
+                Report.read_value('Name (Default: Stranger_*)') or ('Stranger_' + str(iPerson)),
+                Report.read_value('Monthly usage (Default: 0)') or '0',
+                Report.read_value('Over usage (Default: 0)') or '0',
             )
             persons.append(person)
         return persons
@@ -146,7 +159,7 @@ class Report:
     @staticmethod
     def generate_report():
         Report.print_line()
-        print '  TMOBILE REPORT GENERATOR'
+        print 'TMOBILE REPORT GENERATOR'
         Report.print_line()
         print 'Tips: '
         print BoilerPlate
