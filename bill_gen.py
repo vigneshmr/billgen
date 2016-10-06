@@ -122,7 +122,7 @@ Last day for payment: """ + LAST_PAYMENT_DATE + """ of this month.
 
 Ps:
 
-#Random-Chuck-Norris-Joke :)
+#Random-Rajnikanth-Jokes :)
 """ + RandomMsg.get_message()
 
         print report_text
@@ -182,14 +182,17 @@ class RandomMsg:
 
     @staticmethod
     def get_message():
-        r = requests.get('http://api.icndb.com/jokes/random')
+        r = requests.get('http://api.irkfdb.in/facts/random')
         if not r:
             # api call failed. return default
             return DEFAULT_MESSAGE
         # call succeeded. Return joke
         msg = r.json()
         html_parser = HTMLParser.HTMLParser()
-        return html_parser.unescape(msg['value']['joke'])
+        joke = str(msg['resultSet']['data'][0]['fact'])
+        joke=joke.replace('<b>','')
+        joke=joke.replace('</b>', '')
+        return html_parser.unescape(joke)
 
 
 # Entry point
