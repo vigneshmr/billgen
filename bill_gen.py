@@ -66,36 +66,18 @@ class Bill:
         return self.get_shared_total() / len(self.persons)
 
     def generate_report(self):
-        report = self.persons
         print ''
         print ''
-        report_text = """
-Hello everyone,
-
-Bill for month of %s %s:
-
-Per-head-split:
-"""
+        report_text = "\nHello everyone,\n\nBill for month of %s %s:\n\nPer-head-split:\n"
         report_text %= (now.strftime("%B"), str(now.year))
-        report_text += """
-%s
-        """ % str(self.bill_total)
+        report_text += "\n%s\n        " % str(self.bill_total)
         for person in self.persons:
             if person.get_usage_total() > 0:
-                report_text += """
--(%.2f+%.2f)
-                """ % (person.monthly_usage, person.over_usage)
-
-        report_text += """
-=%.2f / %d = $%.2f""" % (self.get_shared_total(),
+                report_text += "\n-(%.2f+%.2f)\n                " % (person.monthly_usage, person.over_usage)
+        report_text += "\n=%.2f / %d = $%.2f" % (self.get_shared_total(),
                          len(self.persons),
                          self.get_shared_per_head())
-
-        report_text += """
-
-
-Your-totals:
-"""
+        report_text += "\n\n\nYour-totals:\n"
 
         t = PrettyTable(['Name', 'BaseChargeSplit', 'MonthlyUsage', 'Overage', 'Total'])
         # calculate expense
@@ -117,15 +99,10 @@ Your-totals:
                        "{0:.2f}".format(person_owed_list[i])],
                       )
         report_text += '\n' + str(t) + '\n'
-
-        report_text += """
-Last day for payment: """ + LAST_PAYMENT_DATE + """ of this month.
-
-Ps:
-
-#Random-Rajnikanth-Jokes :)
-""" + RandomMsg.get_message()
-
+        report_text += "\nLast day for payment: " \
+                       + LAST_PAYMENT_DATE \
+                       + " of this month.\n\nPs:\n\n#Random-Rajnikanth-Jokes :)\n" \
+                       + RandomMsg.get_message()
         print report_text
 
 
