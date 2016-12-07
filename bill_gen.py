@@ -6,10 +6,12 @@ June 8 2016
 Vignesh Murugesan
 
 """
-from prettytable import PrettyTable
-import datetime
+
 import HTMLParser
+import datetime
+
 import requests
+from prettytable import PrettyTable
 
 now = datetime.datetime.now()
 
@@ -54,7 +56,6 @@ class Bill:
         self.persons = persons
 
     def get_shared_total(self):
-        shared_total = 0
         expense_total = 0
         for person in self.persons:
             expense_total += person.get_usage_total()
@@ -75,7 +76,7 @@ Bill for month of %s %s:
 
 Per-head-split:
 """
-        report_text = report_text % (now.strftime("%B"), str(now.year))
+        report_text %= (now.strftime("%B"), str(now.year))
         report_text += """
 %s
         """ % str(self.bill_total)
@@ -190,8 +191,8 @@ class RandomMsg:
         msg = r.json()
         html_parser = HTMLParser.HTMLParser()
         joke = str(msg['resultSet']['data'][0]['fact'])
-        joke=joke.replace('<b>','')
-        joke=joke.replace('</b>', '')
+        joke = joke.replace('<b>', '')
+        joke = joke.replace('</b>', '')
         return html_parser.unescape(joke)
 
 
