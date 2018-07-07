@@ -10,14 +10,13 @@ class RandomMsg:
 
     @staticmethod
     def get_message():
-        r = requests.get('http://api.irkfdb.in/facts/random')
+        r = requests.get('https://api.chucknorris.io/jokes/random')
         if not r:
-            # api call failed. return default
             return DEFAULT_MESSAGE
-        # call succeeded. Return joke
-        msg = r.json()
-        html_parser = HTMLParser.HTMLParser()
-        joke = str(msg['resultSet']['data'][0]['fact'])
-        joke = joke.replace('<b>', '')
-        joke = joke.replace('</b>', '')
-        return html_parser.unescape(joke)
+
+        msg = r.json().get('value', None)
+        if not msg:
+            return DEFAULT_MESSAGE
+
+        msg=msg.replace('Chuck Norris', 'Rajnikanth')
+        return msg
